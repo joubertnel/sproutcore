@@ -2685,15 +2685,33 @@ SC.View = SC.Responder.extend(SC.DelegateSupport,
       if (f.width === AUTO) f.width = layer ? layer.clientWidth : 0;
     }
 
-    // views with SC.Border mixin applied applied
-    if (this.get('hasBorder')) {
-      borderTop = this.get('borderTop') || 0;
-      borderLeft = this.get('borderLeft') || 0;
-      f.height -= borderTop+ (this.get('borderBottom') || 0);
-      f.y += borderTop;
-      f.width -= borderLeft + (this.get('borderRight') || 0);
-      f.x += borderLeft;
+
+    var bT = ((layout.borderTop !== undefined) ? layout.borderTop : layout.border) || 0,
+        bL = ((layout.borderLeft !== undefined) ? layout.borderLeft : layout.border) || 0,
+        bB = ((layout.borderBottom !== undefined) ? layout.borderBottom : layout.border) || 0,
+        bR = ((layout.borderRight !== undefined) ? layout.borderRight : layout.border) || 0;
+
+    // adjust x
+    if (lL != null) {
+      f.x += bL; // The border on the left pushes the frame to the left
+    } else if (lR != null && lW != null) {
+      f.x -= bR; // The border on the right pushes the frame to the right
     }
+
+    // adjust y
+    if (lT != null) {
+      f.y += bT; // The border on the top pushes the frame down
+    } else if (lB != null && lH != null) {
+      f.y -= bB; // The border on the bottom pushes the frame up
+    }
+
+    // adjust width
+    f.width -= (bL + bR); // Border takes up space
+
+    // adjust height
+    f.height -= (bT + bB); // Border takes up space
+
+
 
     // Account for special cases inside ScrollView, where we adjust the
     // element's scrollTop/scrollLeft property for performance reasons.
@@ -2811,7 +2829,24 @@ SC.View = SC.Responder.extend(SC.DelegateSupport,
     }
   },
 
-  /**
+  borderFrame: function(){
+    var layout = this.get('layout'),
+        frame = this.get('frame'),
+        defaultBorder = layout.border,
+        topBorder = ((layout.topBorder !== undefined) ? layout.topBorder : layout.border) || 0,
+        rightBorder = ((layout.rightBorder !== undefined) ? layout.rightBorder : layout.border) || 0,
+        bottomBorder = ((layout.bottomBorder !== undefined) ? layout.bottomBorder : layout.border) || 0,
+        leftBorder = ((layout.leftBorder !== undefined) ? layout.leftBorder : layout.border) || 0;
+
+    return {
+      x: frame.x - leftBorder,
+      y: frame.y - topBorder,
+      width: frame.width + leftBorder + rightBorder,
+      height: frame.height + topBorder + bottomBorder
+    };
+  }.property('frame').cacheable(),
+
+  /**frame
     This method may be called on your view whenever the parent view resizes.
 
     The default version of this method will reset the frame and then call
@@ -4069,6 +4104,11 @@ SC.View.LayoutStyleCalculator = SC.Object.extend({
     var centerY = (this.centerY = layout.centerY);
     this.hasCenterY = (centerY != null);
 
+    var borderTop = (this.borderTop = ((layout.borderTop !== undefined) ? layout.borderTop : layout.border) || 0);
+    var borderRight = (this.borderRight = ((layout.borderRight !== undefined) ? layout.borderRight : layout.border) || 0);
+    var borderBottom = (this.borderBottom = ((layout.borderBottom !== undefined) ? layout.borderBottom : layout.border) || 0);
+    var borderLeft = (this.borderLeft = ((layout.borderLeft !== undefined) ? layout.borderLeft : layout.border) || 0);
+
     // the toString here is to ensure that it doesn't get px added to it
     this.zIndex  = (layout.zIndex  != null) ? layout.zIndex.toString() : null;
     this.opacity = (layout.opacity != null) ? layout.opacity.toString() : null;
@@ -4137,7 +4177,8 @@ SC.View.LayoutStyleCalculator = SC.Object.extend({
     var translate = null, turbo = this.get('turbo'), layout = this.layout, ret = this.ret;
 
     var start, finish, size, maxSize, margin,
-        hasStart, hasFinish, hasSize, hasMaxSize;
+        hasStart, hasFinish, hasSize, hasMaxSize,
+        startBorderVal, endBorderVal;
 
     if (direction === 'x') {
       start      = 'left';
@@ -4145,6 +4186,8 @@ SC.View.LayoutStyleCalculator = SC.Object.extend({
       size       = 'width';
       maxSize    = 'maxWidth';
       margin     = 'marginLeft';
+      startBorder  = 'borderLeft';
+      finishBorder = 'borderRight';
       hasStart   = this.hasLeft;
       hasFinish  = this.hasRight;
       hasSize    = this.hasWidth;
@@ -4155,6 +4198,8 @@ SC.View.LayoutStyleCalculator = SC.Object.extend({
       size       = 'height';
       maxSize    = 'maxHeight';
       margin     = 'marginTop';
+      startBorder  = 'borderTop';
+      finishBorder = 'borderBottom';
       hasStart   = this.hasTop;
       hasFinish  = this.hasBottom;
       hasSize    = this.hasHeight;
@@ -4164,6 +4209,14 @@ SC.View.LayoutStyleCalculator = SC.Object.extend({
     ret[size]   = this._cssNumber(layout[size]);
     ret[start]  = this._cssNumber(layout[start]);
     ret[finish] = this._cssNumber(layout[finish]);
+
+
+    startBorderVal = this._cssNumber(layout[startBorder]);
+    finishBorderVal = this._cssNumber(layout[finishBorder]);
+    ret['border-'+start+'-width'] = startBorderVal || null;
+    ret['border-'+finish+'-width'] = finishBorderVal || null;
+    if (hasSize) { ret[size] -= (startBorderVal + finishBorderVal); }
+
 
     if(hasStart) {
       if (turbo) {

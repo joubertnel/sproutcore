@@ -100,6 +100,7 @@ SC.Border = {
 
   /** @private */
   initMixin: function() {
+    console.warn("SC.Border is deprecated, please set border in your layout");
     this._sc_border_borderStyleDidChange();
   },
 
@@ -123,8 +124,10 @@ SC.Border = {
       this.borderRight  = borderSize;
       this.borderBottom = borderSize;
       this.borderLeft   = borderSize;
+      this.adjust('border', borderSize);
     }
   }
+
 };
 
 SC.mixin(SC.Border, {
