@@ -2686,30 +2686,30 @@ SC.View = SC.Responder.extend(SC.DelegateSupport,
     }
 
 
-    var bT = ((layout.borderTop !== undefined) ? layout.borderTop : layout.border) || 0,
-        bL = ((layout.borderLeft !== undefined) ? layout.borderLeft : layout.border) || 0,
-        bB = ((layout.borderBottom !== undefined) ? layout.borderBottom : layout.border) || 0,
-        bR = ((layout.borderRight !== undefined) ? layout.borderRight : layout.border) || 0;
+    var borderTop = ((layout.borderTop !== undefined) ? layout.borderTop : layout.border) || 0,
+        borderLeft = ((layout.borderLeft !== undefined) ? layout.borderLeft : layout.border) || 0,
+        borderBottom = ((layout.borderBottom !== undefined) ? layout.borderBottom : layout.border) || 0,
+        borderRight = ((layout.borderRight !== undefined) ? layout.borderRight : layout.border) || 0;
 
     // adjust x
     if (lL != null) {
-      f.x += bL; // The border on the left pushes the frame to the left
+      f.x += borderLeft; // The border on the left pushes the frame to the left
     } else if (lR != null && lW != null) {
-      f.x -= bR; // The border on the right pushes the frame to the right
+      f.x -= borderRight; // The border on the right pushes the frame to the right
     }
 
     // adjust y
     if (lT != null) {
-      f.y += bT; // The border on the top pushes the frame down
+      f.y += borderTop; // The border on the top pushes the frame down
     } else if (lB != null && lH != null) {
-      f.y -= bB; // The border on the bottom pushes the frame up
+      f.y -= borderBottom; // The border on the bottom pushes the frame up
     }
 
     // adjust width
-    f.width -= (bL + bR); // Border takes up space
+    f.width -= (borderLeft + borderRight); // Border takes up space
 
     // adjust height
-    f.height -= (bT + bB); // Border takes up space
+    f.height -= (borderTop + borderBottom); // Border takes up space
 
 
 
