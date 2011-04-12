@@ -1,9 +1,10 @@
 // ==========================================================================
 // Project:   SproutCore - JavaScript Application Framework
 // Copyright: ©2006-2011 Strobe Inc. and contributors.
-//            portions copyright ©2010 Apple Inc.
+//            Portions ©2008-2011 Apple Inc. All rights reserved.
 // License:   Licensed under MIT license (see license.js)
 // ==========================================================================
+
 
 /*global module test htmlbody ok equals same stop start */
 
@@ -95,3 +96,11 @@ test('View frame should account for borders if border dimension properties are s
   equals(frame.height, elem.clientHeight, 'height equal');
 });
 
+test('Should be deprecated', function(){
+  var originalLogger = console.warn, logged;
+  console.warn = function(msg){ logged = msg; }
+  SC.View.create(SC.Border);
+  console.warn = originalLogger;
+
+  equals(logged, "SC.Border is deprecated, please set border in your layout");
+});

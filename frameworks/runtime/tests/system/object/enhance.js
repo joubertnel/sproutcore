@@ -1,3 +1,8 @@
+// ==========================================================================
+// Project:   SproutCore - JavaScript Application Framework
+// Copyright: ©2006-2011 Strobe Inc. and contributors.
+// License:   Licensed under MIT license (see license.js)
+// ==========================================================================
 module("Function#enhance");
 
 test("reopening and enhancing", function() {
@@ -174,4 +179,18 @@ test("__sc_super__ semantics", function() {
 
   SubKlass.reopen({});
   ok(SubKlass.__sc_super__ === Klass.prototype, "Reopen doesn't break prototype recordkeeping");
+});
+
+test("enhance still works if there is no base method to enhance", function() {
+  var enhancer = {
+    weirdName: function(original) {
+      original();
+
+      return YES;
+    }.enhance()
+  };
+
+  var enhanced = SC.Object.create(enhancer);
+
+  ok(enhanced.weirdName(), "enhanced function runs with no errors");
 });

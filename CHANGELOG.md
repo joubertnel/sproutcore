@@ -2,13 +2,74 @@
 CHANGE LOG FOR 1.5
 ==================
 
+1.5.0.rc.1
+-----------
+* Removed #bindCollection helper. Instead, use {{#collection
+  PathTo.Collection contentBinding="MyApp.controller.content"}}
+* {{view}} helper looks up views relative to the view, and then the
+  global scope
+* Built-in helpers and mustaches now automatically update. It is no
+  longer necessary to use {{bind}} or {{boundIf}}
+* Adds enumerable observers, which allow you to subscribe to mutations
+  of an enumerable
+* Fixed error reporting when a Handlebars template is unable to find a
+  property
+* Dependent keys that contain paths now invalidate immediately instead
+  of at the end of the run loop, which significantly improves
+  performances, especially when combined with @each
+* SC.offset offers more reliability than the deprecated SC.viewOffset
+* Added SC.getPath(), which is like SC.get() but takes a path instead of
+  just a property
+* Improved compatibility of using SC.CoreViews (such as SC.TemplateView)
+  inside standard SC.Views
+* Tear down SC.TemplateCollectionView child views when no longer needed,
+  which fixes a memory leak issue
+* Integrated new functionality from the Ki framework into the SC.StateChart framework so that they now have feature-parity
+* The SC.PickerPane was updated to add removeTarget and removeTarget properties
+* Fixed documentation in datastore and view layer
+* Refactored and fixed bugs in the way SproutCore handles AutoResizing.
+* Updated the test_controls application to reflect AutoResize changes
+* Fixed bugs with the selection behavior in lists
+* Fixed bugs with the logic that determines when sproutcore applications are ready to begin execution
+* Improved performance of layout updates
+* Fixed bugs in keyboard behavior of menus
+* Made more views utilize render delegates
+* Updated unit tests for menus to reflect new keyboard behavior
+* Add proper autoresize behavior to buttons
+* Fixed frame calculation bugs in lists
+* Removed redundant bounds checking in scroll
+* Fixed bugs with the localization of titles in segmented views
+* Fixes for formView
+* Added ability to scale apps so that we can visualize them on the iPhone
+* If using StaticLayout in the image, don't use Canvas
+* Fixed firstResponder support in text_field
+* Fixed responder behavior in editable
+* Refactoring for flowed_layout
+* Rewrote the existing inline editing code to make it more generic and integrated it with SC.LabelView, SC.InlineTextFieldView and SC.ListItemView
+* Added a new SC.SplitView class to the experimental framework which is a re-write of the existing SC.SplitView class but with cleaner code and multi-pane support.
+* Introduced a new AlertPane API and backwards compatibility for the existing API. The new API allows us to create an AlertPane by defining a hash of parameters instead of single methods which take 15+ parameters.
+* Added the ability to programmatically trigger SC.Ready instead of automatically by jQuery which allows the app developer to decide when his app is ready to run
+* Moved render delegates from Ace to base_theme, and render delegates from base to legacy_theme
+* Renamed standard_theme to legacy_theme
+* Cleaned up old, broken css code in desktop and foundation frameworks
+* Updated ImageView documentation
+* Small bug fixes throughout
+* Added unit tests for new functionality
+* Fix failing unit tests
+
+
 1.5.0.pre.5
 -----------
 * Support for high resolution screens.
-* Support for ie7 base64 images using mhtml
-* Initial support for accesiblity (ARIA)
-* Improved SC.Logger , allows log recording and different reporting levels like log4j
+* Support for IE7 base64 images using MHTML
+* Initial support for accessibility (WAI-ARIA)
+* Improved SC.Logger, allows log recording and different reporting levels like log4j
 * Modular loading and whitelisting. 
+* Improvements and bug fixes in SC.TemplateView and Handlebars helpers
+* Added {{bindAttr}}, {{boundIf}}, and {{collection}} helpers
+* Fixes to Ace CSS
+* IE7 compatibility fixes
+* Numerous bug fixes and minor improvements
 
 
 1.5.0.pre.4

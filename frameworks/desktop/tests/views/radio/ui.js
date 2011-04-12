@@ -1,7 +1,7 @@
 // ==========================================================================
 // Project:   SproutCore - JavaScript Application Framework
 // Copyright: ©2006-2011 Strobe Inc. and contributors.
-//            portions copyright @2009 Apple Inc.
+//            portions copyright @2011 Apple Inc.
 // License:   Licensed under MIT license (see license.js)
 // ==========================================================================
 
@@ -105,7 +105,6 @@ var pane = SC.ControlTestPane.design()
     itemValueKey: 'value',
     layoutDirection: SC.LAYOUT_HORIZONTAL
   });
-pane.show(); // add a test to show the test pane
 
 pane.verifyButtons = function verifyButtons(view, items) {
   var radioButtons = view.$('.sc-radio-button');
@@ -143,11 +142,13 @@ pane.verifyLabels = function verifyLabels(view, items) {
 module('SC.RadioView UI', {
   setup: function(){
     htmlbody('<style> .sc-static-layout { border: 1px red dotted; } </style>');
+    pane.standardSetup().setup();
   },
   teardown: function(){
+    pane.standardSetup().teardown();
     clearHtmlbody();
   }
-};
+});
 
 test("basic", function() {
   
@@ -236,7 +237,9 @@ test("disabled", function() {
     
     equals(idx, i, 'radio button #%@ should have field value %@'.fmt(idx, i));
     equals(theInput.attr('aria-checked'), 'false', 'radio button #%@ should not be checked'.fmt(idx));
-    ok(!theInput.hasClass('disabled'), 'radio button #%@ should be disabled'.fmt(idx));
+    
+    // NOTE: the individual buttons SHOULD be disabled if the control itself is.
+    ok(theInput.hasClass('disabled'), 'radio button #%@ should be disabled'.fmt(idx));
     i++;
   });
   
@@ -316,22 +319,6 @@ test("aria-role-radio", function() {
   });
 });
 
-test("aria-label", function() {
-  var radioButtons = pane.view('aria-label').$('.sc-radio-button');
-
-  var i = 0;
-  radioButtons.forEach(function(radioInput) {
-    var theInput = SC.$(radioInput),
-      idx = parseInt(theInput.attr('index'),0),
-      buttonValue = theInput.attr('value');
-
-    equals(idx, i, 'radio button #%@ should have field value %@'.fmt(idx, i));
-    equals(theInput.attr('aria-label'), 'itemList1', 'radio button #%@ should have aria-label as itemList1'.fmt(idx));
-
-    i++;
-  });
-});
-
 test("aria-labeledBy", function() {
   var radioButtons = pane.view('aria-labeledBy').$('.sc-radio-button');
 
@@ -342,7 +329,9 @@ test("aria-labeledBy", function() {
       buttonValue = theInput.attr('value');
 
     equals(idx, i, 'radio button #%@ should have field value %@'.fmt(idx, i));
-    equals(theInput.attr('aria-labelledby'), 'color', 'radio button #%@ should have aria-labelledby as color'.fmt(idx));
+
+    var labelled_by = document.getElementById(theInput.attr('aria-labelledby'));
+    equals(labelled_by, theInput.find('.sc-button-label')[0], 'radio button #%@ should have aria-labelledby pointing to label element'.fmt(idx));
 
     i++;
   });

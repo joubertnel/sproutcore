@@ -1,7 +1,7 @@
 // ==========================================================================
 // Project:   SproutCore - JavaScript Application Framework
 // Copyright: ©2006-2011 Strobe Inc. and contributors.
-//            portions copyright ©2010 Apple Inc.
+//            portions copyright ©2011 Apple Inc.
 // License:   Licensed under MIT license (see license.js)
 // ==========================================================================
 
@@ -13,7 +13,7 @@ var items = [
   { title: 'Selected Menu Item', keyEquivalent: 'backspace' },
   { separator: YES },
   { title: 'Menu Item with Icon', icon: 'inbox', keyEquivalent: 'ctrl_m' },
-  { title: 'Menu Item with Icon', icon: 'folder', keyEquivalent: 'ctrl_p' },
+  { title: 'Menu Item with Icon', icon: 'folder', keyEquivalent: ['ctrl_p', 'ctrl_f'] },
   { separator: YES },
   { title: 'Selected Menu Item…', isChecked: YES, keyEquivalent: 'ctrl_shift_o' },
   { title: 'Item with Submenu', subMenu: [{ title: 'Submenu item 1' }, { title: 'Submenu item 2'}] },
@@ -116,9 +116,11 @@ test('Control size', function() {
   });
   smallPane.popup();
   views = smallPane.get('menuItemViews');
-  equals(views[0].get('frame').height, SC.MenuPane.SMALL_MENU_ITEM_HEIGHT, 'should change itemHeight');
-  equals(views[1].get('frame').height, SC.MenuPane.SMALL_MENU_ITEM_SEPARATOR_HEIGHT, 'should change itemSeparatorHeight');
-  equals(views[0].get('frame').y, SC.MenuPane.SMALL_MENU_HEIGHT_PADDING/2, 'should change menuHeightPadding');
+
+  var small_constants = SC.BaseTheme.menuRenderDelegate['sc-small-size'];
+  equals(views[0].get('frame').height, small_constants.itemHeight, 'should change itemHeight');
+  equals(views[1].get('frame').height, small_constants.itemSeparatorHeight, 'should change itemSeparatorHeight');
+  equals(views[0].get('frame').y, small_constants.menuHeightPadding/2, 'should change menuHeightPadding');
   smallPane.remove();
 
   largePane = SC.MenuPane.create({
@@ -127,9 +129,11 @@ test('Control size', function() {
   });
   largePane.popup();
   views = largePane.get('menuItemViews');
-  equals(views[0].get('frame').height, SC.MenuPane.LARGE_MENU_ITEM_HEIGHT, 'should change itemHeight');
-  equals(views[1].get('frame').height, SC.MenuPane.LARGE_MENU_ITEM_SEPARATOR_HEIGHT, 'should change itemSeparatorHeight');
-  equals(views[0].get('frame').y, SC.MenuPane.LARGE_MENU_HEIGHT_PADDING/2, 'should change menuHeightPadding');
+
+  var large_constants = SC.BaseTheme.menuRenderDelegate['sc-large-size'];
+  equals(views[0].get('frame').height, large_constants.itemHeight, 'should change itemHeight');
+  equals(views[1].get('frame').height, large_constants.itemSeparatorHeight, 'should change itemSeparatorHeight');
+  equals(views[0].get('frame').y, large_constants.menuHeightPadding/2, 'should change menuHeightPadding');
   largePane.remove();
 });
 
@@ -220,6 +224,27 @@ test('Automatic Closing', function() {
   clickOn(menu);
   ok(!menu.get('isVisibleInWindow'), 'menu should close if anywhere other than a menu item is clicked');
 });
+
+test('keyEquivalents', function() {
+  var keyEquivalents = menu._keyEquivalents;
+  
+  // verify that keyEquivalents were mapped correctly and that multiple 
+  // keyEquivalents work
+  menu.items.forEach(function(item) {
+    var keyEq = item.keyEquivalent, idx, len;
+    if(!keyEq) return;
+    
+    if(SC.typeOf(keyEq)===SC.T_ARRAY) {
+      for(idx=0,len=keyEq.length;idx<len;idx++) {
+        ok(keyEquivalents[keyEq[idx]], "keyEquivalent should map to " + keyEq[idx]);
+      }
+    }
+    else {
+      ok(keyEquivalents[keyEq], "keyEquivalent should map to " + keyEq);
+    }
+  });
+});
+
 
 test('aria-role attribute', function() {
   var menuPane = SC.MenuPane.create({

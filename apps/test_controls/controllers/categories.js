@@ -1,7 +1,7 @@
 // ==========================================================================
 // Project:   SproutCore - JavaScript Application Framework
 // Copyright: ©2006-2011 Strobe Inc. and contributors.
-//            Portions ©2008-2010 Apple Inc. All rights reserved.
+//            Portions ©2008-2011 Apple Inc. All rights reserved.
 // License:   Licensed under MIT license (see license.js)
 // ==========================================================================
 /*globals TestControls */
@@ -51,6 +51,19 @@ TestControls.rootCategory = SC.Object.create({
         })
       ]
     }),
+
+    SC.Object.create({
+      treeItemIsExpanded: YES,
+      group: true,
+      name: 'Panels',
+      treeItemChildren: [
+        SC.Object.create({
+          name: 'Panels',
+          show: 'panels_page'
+        })
+      ]
+    }),
+
     SC.Object.create({
       treeItemIsExpanded: YES,
       group: true,
@@ -81,8 +94,12 @@ TestControls.rootCategory = SC.Object.create({
       name: "Layout",
       treeItemChildren: [
         SC.Object.create({
-          name: "Flow Layout",
+          name: "Flowed Layout",
           show: "flow_layout_page"
+        }),
+        SC.Object.create({
+          name: "Split",
+          show: "split_page"
         })
       ]
     }),

@@ -1,7 +1,7 @@
 // ==========================================================================
 // Project:   SproutCore - JavaScript Application Framework
 // Copyright: ©2006-2011 Strobe Inc. and contributors.
-//            Portions ©2008-2010 Apple Inc. All rights reserved.
+//            Portions ©2008-2011 Apple Inc. All rights reserved.
 // License:   Licensed under MIT license (see license.js)
 // ==========================================================================
 
@@ -13,6 +13,7 @@ sc_require('system/theme');
 
 sc_require('mixins/string') ;
 sc_require('views/view/base') ;
+
 
 /**
   Default property to disable or enable by default the contextMenu
@@ -37,54 +38,6 @@ SC.EMPTY_CHILD_VIEWS_ARRAY.needsClone = YES;
 /**
   @class
 
-  Base class for managing a view.  Views provide two functions:
-
-  1. They translate state and events into drawing instructions for the
-     web browser and
-
-  2. They act as first responders for incoming keyboard, mouse, and
-     touch events.
-
-  h2. View Initialization
-
-  When a view is setup, there are several methods you can override that
-  will be called at different times depending on how your view is created.
-  Here is a guide to which method you want to override and when:
-
-  - *init:* override this method for any general object setup (such as
-    observers, starting timers and animations, etc) that you need to happen
-    everytime the view is created, regardless of whether or not its layer
-    exists yet.
-
-  - *render:* override this method to generate or update your HTML to reflect
-    the current state of your view.  This method is called both when your view
-    is first created and later anytime it needs to be updated.
-
-  - *didCreateLayer:* the render() method is used to generate new HTML.
-    Override this method to perform any additional setup on the DOM you might
-    need to do after creating the view.  For example, if you need to listen
-    for events.
-
-  - *willDestroyLayer:* if you implement didCreateLayer() to setup event
-    listeners, you should implement this method as well to remove the same
-    just before the DOM for your view is destroyed.
-
-  - *updateLayer:* Normally, when a view needs to update its content, it will
-    re-render the view using the render() method.  If you would like to
-    override this behavior with your own custom updating code, you can
-    replace updateLayer() with your own implementation instead.
-
-  - *didAppendToDocument:* in theory all DOM setup could be done
-    in didCreateLayer() as you already have a DOM element instantiated.
-    However there is cases where the element has to be first appended to the
-    Document because there is either a bug on the browser or you are using
-    plugins which objects are not instantiated until you actually append the
-    element to the DOM. This will allow you to do things like registering
-    DOM events on flash or quicktime objects.
-
-  @extends SC.Responder
-  @extends SC.DelegateSupport
-  @since SproutCore 1.0
 */
 SC.CoreView.reopen(
 /** @scope SC.View.prototype */ {
@@ -397,6 +350,7 @@ SC.CoreView.reopen(
   },
 
   parentViewDidResize: function() {
+    if (!this.get('hasLayout')) { this.notifyPropertyChange('frame'); }
     this.viewDidResize();
   },
 
@@ -449,7 +403,8 @@ SC.CoreView.reopen(
     invokes the same on all child views.
   */
   _notifyDidCreateLayer: function() {
-    this.notifyPropertyChange("layer");
+    this.notifyPropertyChange('layer');
+
     if (this.didCreateLayer) { this.didCreateLayer() ; }
 
     // and notify others
@@ -527,6 +482,7 @@ SC.CoreView.reopen(
     view's layer into the layer of the new parent view.
   */
   parentViewDidChange: function() {
+    this.parentViewDidResize();
     this.updateLayerLocation();
   },
 
@@ -680,7 +636,7 @@ SC.CoreView.reopen(
     context.addClass(this.get('classNames'));
 
     if (this.get('isTextSelectable')) { context.addClass('allow-select'); }
-    if (!this.get('isVisible')) { context.addClass('hidden'); }
+    if (!this.get('isVisible')) { context.addClass('sc-hidden'); }
     if (this.get('isFirstResponder')) { context.addClass('focus'); }
 
     context.id(this.get('layerId'));
@@ -747,6 +703,7 @@ SC.CoreView.reopen(
   */
 
   _notifyDidAppendToDocument: function() {
+    if (!this.get('hasLayout')) { this.notifyPropertyChange('frame'); }
     if (this.didAppendToDocument) { this.didAppendToDocument(); }
 
     var i=0, child, childLen, children = this.get('childViews');
@@ -801,7 +758,7 @@ SC.CoreView.reopen(
 
     @property {Array}
   */
-  classNames: ['sc-view'],
+  classNames: [],
 
   /**
     Tool tip property that will be set to the title attribute on the HTML
@@ -950,19 +907,19 @@ SC.CoreView.reopen(
     Computes the frame of the view by examining the view's DOM representation.
     If no representation exists, returns null.
 
-    If a parent view is passed, its bounds will be taken into account when
+    If the view has a parent view, the parent's bounds will be taken into account when
     calculating the frame.
 
-    @param {Rect} pdim the parent view's dimensions
     @returns {Rect} the computed frame
   */
-  computeFrameWithParentFrame: function(pdim) {
-    var layer;
-    var pv = this.get('parentView');
+  computeFrameWithParentFrame: function() {
+    var layer,                            // The view's layer
+        pv = this.get('parentView'),      // The view's parent view (if it exists)
+        f;                                // The layer's coordinates in the document
 
     // need layer to be able to compute rect
     if (layer = this.get('layer')) {
-      f = SC.viewportOffset(layer); // x,y
+      f = SC.offset(layer); // x,y
       if (pv) { f = pv.convertFrameFromView(f, null); }
 
       /*
@@ -973,7 +930,13 @@ SC.CoreView.reopen(
       f.height = layer.offsetHeight;
       return f;
     }
-    return null; // can't compute
+
+    // Unable to compute yet
+    if (this.get('hasLayout')) {
+      return null;
+    } else {
+      return { x: 0, y: 0, width: 0, height: 0 };
+    }
   },
 
   /**
@@ -1182,11 +1145,15 @@ SC.CoreView.reopen(
     }
 
     attrs.owner = attrs.parentView = this ;
-    attrs.isVisibleInWindow = this.get('isVisibleInWindow');
     if (!attrs.page) { attrs.page = this.page ; }
 
     // Now add this to the attributes and create.
     if (view.isClass) { view = view.create(attrs); }
+
+    if (view.hasVisibility) {
+      view.set('isVisibleInWindow', this.get('isVisibleInWindow'));
+    }
+
     return view ;
   },
 
@@ -1221,13 +1188,12 @@ SC.CoreView.reopen(
     @returns YES if the contextmenu can show up
   */
   contextMenu: function(evt) {
-    if(!this.get('isContextMenuEnabled')) evt.stop();
-    return true;
+    if (this.get('isContextMenuEnabled')) { return YES; }
   }
 
 });
 
-SC.CoreView.mixin(/** @scope SC.CoreView */ {
+SC.CoreView.mixin(/** @scope SC.View.prototype */ {
 
   /** @private walk like a duck -- used by SC.Page */
   isViewClass: YES,
@@ -1242,7 +1208,13 @@ SC.CoreView.mixin(/** @scope SC.CoreView */ {
     @function
   */
   design: function() {
-    if (this.isDesign) { return this; } // only run design one time
+    if (this.isDesign) {
+      //@ if (debug)
+      SC.Logger.warn("SC.View#design called twice for %@.".fmt(this));
+      //@ endif
+      return this;
+    }
+
     var ret = this.extend.apply(this, arguments);
     ret.isDesign = YES ;
     if (SC.ViewDesigner) {
@@ -1447,7 +1419,62 @@ SC.CoreView.unload = function() {
   }
 } ;
 
-SC.View = SC.CoreView.extend({});
+/** 
+  @class 
+
+  Base class for managing a view.  Views provide two functions:
+
+  1. They translate state and events into drawing instructions for the
+     web browser and
+
+  2. They act as first responders for incoming keyboard, mouse, and
+     touch events.
+
+  h2. View Initialization
+
+  When a view is setup, there are several methods you can override that
+  will be called at different times depending on how your view is created.
+  Here is a guide to which method you want to override and when:
+
+  - *init:* override this method for any general object setup (such as
+    observers, starting timers and animations, etc) that you need to happen
+    everytime the view is created, regardless of whether or not its layer
+    exists yet.
+
+  - *render:* override this method to generate or update your HTML to reflect
+    the current state of your view.  This method is called both when your view
+    is first created and later anytime it needs to be updated.
+
+  - *didCreateLayer:* the render() method is used to generate new HTML.
+    Override this method to perform any additional setup on the DOM you might
+    need to do after creating the view.  For example, if you need to listen
+    for events.
+
+  - *willDestroyLayer:* if you implement didCreateLayer() to setup event
+    listeners, you should implement this method as well to remove the same
+    just before the DOM for your view is destroyed.
+
+  - *updateLayer:* Normally, when a view needs to update its content, it will
+    re-render the view using the render() method.  If you would like to
+    override this behavior with your own custom updating code, you can
+    replace updateLayer() with your own implementation instead.
+
+  - *didAppendToDocument:* in theory all DOM setup could be done
+    in didCreateLayer() as you already have a DOM element instantiated.
+    However there is cases where the element has to be first appended to the
+    Document because there is either a bug on the browser or you are using
+    plugins which objects are not instantiated until you actually append the
+    element to the DOM. This will allow you to do things like registering
+    DOM events on flash or quicktime objects.
+
+  @extends SC.Responder
+  @extends SC.DelegateSupport
+  @since SproutCore 1.0
+
+*/
+SC.View = SC.CoreView.extend(/** @scope SC.View.prototype */{
+  classNames: ['sc-view']
+});
 
 //unload views for IE, trying to collect memory.
 if(SC.browser.msie) SC.Event.add(window, 'unload', SC.View, SC.View.unload) ;

@@ -1,7 +1,7 @@
 // ==========================================================================
 // Project:   SproutCore - JavaScript Application Framework
 // Copyright: ©2006-2011 Strobe Inc. and contributors.
-//            Portions ©2008-2010 Apple Inc. All rights reserved.
+//            Portions ©2008-2011 Apple Inc. All rights reserved.
 // License:   Licensed under MIT license (see license.js)
 // ==========================================================================
 
@@ -17,7 +17,7 @@ TestControls.buttonsPage = SC.View.design({
       classNames: ["sample_controls"],
       childViews: "header style flags small normal huge jumbo space disclosureHeader disclosureClosed disclosureOpen".w(),
       header: SC.LabelView.design({
-        flowSize: { widthPercentage: 1 },
+        fillWidth: YES,
         layout: {width: 200, height: 24 },
         
         classNames: "header".w(),
@@ -25,6 +25,9 @@ TestControls.buttonsPage = SC.View.design({
       }),
       
       style: SC.FormView.row("Theme", SC.SegmentedView.design({
+        controlSize: SC.LARGE_CONTROL_SIZE,
+        flowSpacing: { bottom: 20 },
+        
         align: 'left',
         layout: { width: 300, height: 30 },
         items: [
@@ -70,7 +73,7 @@ TestControls.buttonsPage = SC.View.design({
         })
       })),
       
-      normal: SC.FormView.row(SC.ButtonView.design({
+      normal: SC.FormView.row(SC.ButtonView.design(SC.AutoResize, {
         controlSize: SC.REGULAR_CONTROL_SIZE,
         layout: { height: 24, width: 100 },
         title: "Click Me",
@@ -82,7 +85,7 @@ TestControls.buttonsPage = SC.View.design({
         isCancelBinding: 'TestControls.buttonsController.cancel'
       })),
 
-      small: SC.FormView.row(SC.ButtonView.design({
+      small: SC.FormView.row(SC.ButtonView.design(SC.AutoResize, {
         controlSize: SC.SMALL_CONTROL_SIZE,
         layout: { height: 18, width: 100 },
         title: "Click Me",
@@ -94,7 +97,7 @@ TestControls.buttonsPage = SC.View.design({
         isCancelBinding: 'TestControls.buttonsController.cancel'
       })),
 
-      huge: SC.FormView.row(SC.ButtonView.design({
+      huge: SC.FormView.row(SC.ButtonView.design(SC.AutoResize, {
         controlSize: SC.HUGE_CONTROL_SIZE,
         layout: { height: 30, width: 100 },
         title: "Click Me",
@@ -106,7 +109,7 @@ TestControls.buttonsPage = SC.View.design({
         isCancelBinding: 'TestControls.buttonsController.cancel'
       })),
 
-      jumbo: SC.FormView.row(SC.ButtonView.design({
+      jumbo: SC.FormView.row(SC.ButtonView.design(SC.AutoResize, {
         controlSize: SC.JUMBO_CONTROL_SIZE,
         layout: { height: 44, width: 100 },
         title: "Click Me",
@@ -123,6 +126,7 @@ TestControls.buttonsPage = SC.View.design({
         fillWidth: YES
       }),
       disclosureHeader: SC.LabelView.design({
+        fillWidth: YES,
         layout: { width: 400, height: 24 },
         classNames: "header".w(),
         value: "Disclosure Buttons"

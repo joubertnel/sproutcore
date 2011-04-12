@@ -1,6 +1,6 @@
 // ==========================================================================
 // Project:   SproutCore - JavaScript Application Framework
-// Copyright: ©2006-2010 Apple Inc. and contributors.
+// Copyright: ©2006-2011 Apple Inc. and contributors.
 // License:   Licensed under MIT license (see license.js)
 // ==========================================================================
 
@@ -11,6 +11,8 @@ module("SC.Store#unloadRecords", {
     TestRecord = SC.Record.extend({
       name: SC.Record.attr(String)
     });
+
+    SC.RunLoop.begin();
 
     store = SC.Store.create();
 
@@ -25,6 +27,8 @@ module("SC.Store#unloadRecords", {
     store.createRecord(TestRecord, {
       name: 'Baz'
     });
+
+    SC.RunLoop.end();
   }
 });
 

@@ -1,7 +1,7 @@
 // ==========================================================================
 // Project:   SproutCore - JavaScript Application Framework
 // Copyright: ©2006-2011 Strobe Inc. and contributors.
-//            Portions ©2008-2010 Apple Inc. All rights reserved.
+//            Portions ©2008-2011 Apple Inc. All rights reserved.
 // License:   Licensed under MIT license (see license.js)
 // ==========================================================================
 /*global TestControls tile Forms */
@@ -16,8 +16,10 @@ require("resources/sliders_page");
 require("resources/text_field_page");
 require("resources/flow_layout_page");
 require("resources/scroll_page");
+require("resources/split_page");
 require("resources/list_page");
 require("resources/tab_page");
+require("resources/panels_page");
 
 TestControls.mainPage = SC.Page.create({
   
@@ -134,10 +136,14 @@ TestControls.mainPage = SC.Page.create({
   text_field_page: TestControls.textFieldPage,
   
   segmented_page: TestControls.segmentedPage,
+
+  panels_page: TestControls.panelsPage,
   
   flow_layout_page: TestControls.flowLayoutPage,
   
   scroll_page: TestControls.scrollPage,
+
+  split_page: TestControls.splitPage,
   
   list_page: TestControls.listPage,
   

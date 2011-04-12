@@ -1,6 +1,6 @@
 // ==========================================================================
 // Project:   SproutCore - JavaScript Application Framework
-// Copyright: ©2006-2010 Apple Inc. and contributors.
+// Copyright: ©2006-2011 Apple Inc. and contributors.
 // License:   Licensed under MIT license (see license.js)
 // ==========================================================================
 
@@ -121,5 +121,12 @@ test("should set newView.page to receiver.page unless custom attr is passed", fu
   equals(v.get('page'), myPage, 'v.page == custom page');
 });
 
+test("should not change isVisibleInWindow property on views that do not have visibility support", function() {
+  var coreView = SC.CoreView.extend({});
 
+  SC.run(function() { view.set('isVisible', NO); });
+  var v = view.createChildView(coreView);
+
+  ok(v.get('isVisibleInWindow'), "SC.CoreView instance always has isVisibleInWindow set to NO");
+});
 

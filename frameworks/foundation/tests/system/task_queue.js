@@ -1,9 +1,15 @@
+// ==========================================================================
+// Project:   SproutCore - JavaScript Application Framework
+// Copyright: ©2006-2011 Strobe Inc. and contributors.
+//            ©2008-2011 Apple Inc. All rights reserved.
+// License:   Licensed under MIT license (see license.js)
+// ==========================================================================
 // ========================================================================
-// SC.UserDefaults Base Tests
+// SC.TaskQueue Base Tests
 // ========================================================================
 /*globals module test ok isObj equals expects */
 var taskQueue;
-module("User Defaults",{
+module("Task Queue",{
   setup: function(){
     taskQueue = SC.TaskQueue.create();
   }

@@ -1,3 +1,9 @@
+// ==========================================================================
+// Project:   SproutCore - JavaScript Application Framework
+// Copyright: ©2006-2011 Strobe Inc. and contributors.
+//            ©2008-2011 Apple Inc. All rights reserved.
+// License:   Licensed under MIT license (see license.js)
+// ==========================================================================
 // ========================================================================
 // View metrics Unit Tests
 // ========================================================================
@@ -112,5 +118,5 @@ test("setting isVisible to NO should trigger a layer update to hide the view", f
   view.set('isVisible', NO);
   SC.RunLoop.end();
   
-  ok(view.renderContext(view.get('layer')).classNames().indexOf('hidden') >= 0, "layer should have the 'hidden' class");
+  ok(view.renderContext(view.get('layer')).classNames().indexOf('sc-hidden') >= 0, "layer should have the 'sc-hidden' class");
 });

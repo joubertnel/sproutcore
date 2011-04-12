@@ -1,7 +1,7 @@
 // ==========================================================================
 // Project:   SproutCore - JavaScript Application Framework
 // Copyright: ©2006-2011 Strobe Inc. and contributors.
-//            portions copyright @2009 Apple Inc.
+//            portions copyright @2011 Apple Inc.
 // License:   Licensed under MIT license (see license.js)
 // ==========================================================================
 
@@ -42,9 +42,7 @@ var pane = SC.ControlTestPane.design()
   })
 
   .add("aria-label", SC.CheckboxView, {
-    value: NO, title: "aria-label",
-    ariaLabel:'TEXT BOX',
-    ariaLabeledBy: 'TEXT BOX1'
+    value: NO, title: "aria-label"
   });
 
 pane.show(); // add a test to show the test pane
@@ -116,9 +114,8 @@ test("role", function() {
   equals(view.$().attr('role'),'checkbox', 'should have role as checkbox');
 });
 
-test("aria-label", function() {
+test("aria-labelledby", function() {
   var view = pane.view('aria-label');
-  equals(view.$().attr('aria-label'),'TEXT BOX', 'should have ariaLabel as TEXT-BOX');
-  equals(view.$().attr('aria-labelledby'),'TEXT BOX1', 'should have ariaLabeledby as TEXT-BOX1');
+  equals(document.getElementById(view.$().attr('aria-labelledby')), view.$('span.label')[0], "aria-labelledby points at the label");
 });
 })();

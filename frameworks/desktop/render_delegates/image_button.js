@@ -1,13 +1,17 @@
 // ==========================================================================
 // Project:   SproutCore - JavaScript Application Framework
 // Copyright: ©2006-2011 Strobe Inc. and contributors.
-//            Portions ©2008-2009 Apple Inc. All rights reserved.
-// License:   Licened under MIT license (see license.js)
+//            Portions ©2008-2011 Apple Inc. All rights reserved.
+// License:   Licensed under MIT license (see license.js)
 // ==========================================================================
+
 
 SC.BaseTheme.imageButtonRenderDelegate = SC.RenderDelegate.create({
   name: 'image-button',
   render: function(dataSource, context) {
+    // render controlSize
+    this.addSizeClassName(dataSource, context);
+
     var image = dataSource.get('image');
 
     context.addClass('no-min-width');
@@ -21,6 +25,8 @@ SC.BaseTheme.imageButtonRenderDelegate = SC.RenderDelegate.create({
   },
 
   update: function(dataSource, $) {
+    this.updateSizeClassName(dataSource, $);
+
     if (dataSource.didChangeFor('imageButtonRenderDelegate', 'image')) {
       var image = dataSource.get('image');
 

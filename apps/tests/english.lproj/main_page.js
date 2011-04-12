@@ -1,7 +1,7 @@
 // ==========================================================================
 // Project:   SproutCore Test Runner
 // Copyright: ©2006-2011 Strobe Inc. and contributors.
-//            Portions ©2008-2010 Apple Inc. All rights reserved.
+//            Portions ©2008-2011 Apple Inc. All rights reserved.
 // License:   Licensed under MIT license (see license.js)
 // ==========================================================================
 /*globals TestRunner */
@@ -31,10 +31,9 @@ TestRunner.mainPage = SC.Page.design({
       
       layout: { left: 0, top: 0, right: 0, bottom: 32 },
       
-      defaultThickness: 200,
-      topLeftThicknessBinding: "TestRunner.sourceController.sidebarThickness",
-      
-      topLeftView: SC.ScrollView.design({
+      topLeftView: SC.ScrollView.design(SC.SplitChild, {
+
+        size: 200,
         
         hasHorizontalScroller: NO, // disable horizontal scrolling
         contentView: SC.SourceListView.design({
@@ -48,7 +47,8 @@ TestRunner.mainPage = SC.Page.design({
         })
       }),
       
-      bottomRightView: SC.SceneView.design({
+      bottomRightView: SC.SceneView.design(SC.SplitChild, {
+        autoResizeStyle: SC.RESIZE_AUTOMATIC,
         scenes: "testsMaster testsDetail".w(),
         nowShowingBinding: "TestRunner.currentScene"
       })

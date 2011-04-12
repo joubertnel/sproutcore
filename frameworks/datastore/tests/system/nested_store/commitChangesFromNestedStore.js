@@ -1,6 +1,6 @@
 // ==========================================================================
 // Project:   SproutCore - JavaScript Application Framework
-// Copyright: ©2006-2010 Apple Inc. and contributors.
+// Copyright: ©2006-2011 Apple Inc. and contributors.
 // License:   Licensed under MIT license (see license.js)
 // ==========================================================================
 /*globals module ok equals same test MyApp */
@@ -8,6 +8,8 @@
 var parent, store, child, storeKey, json;
 module("SC.NestedStore#commitChangesFromNestedStore", {
   setup: function() {
+    SC.RunLoop.begin();
+
     parent = SC.Store.create();
     
     json = {
@@ -26,6 +28,8 @@ module("SC.NestedStore#commitChangesFromNestedStore", {
     child.dataHashDidChange(storeKey);
     child.changelog = SC.Set.create();
     child.changelog.add(storeKey);
+
+    SC.RunLoop.end();
   }
 });
 
