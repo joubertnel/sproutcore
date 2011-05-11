@@ -11,6 +11,7 @@
 
 var url, request, contents ;
 
+
 module("SC.Request", {
 
   setup: function() {
@@ -272,5 +273,53 @@ test("Timeouts - Status listener callback", function() {
     ok(false, 'timeout did not fire at all');
     window.start();
   }, 500);
+});
+
+
+
+module("SC.Request Cross-Domain", {
+
+  setup: function() {
+    url = "http://api.freebase.com/api/service/search?query=Eiffel&limit=1";;
+    request = SC.Request.getUrl(url);
+    contents = null;
+  },
+
+  teardown: function() {
+    url = request = contents = null;
+  }
+});
+
+test("Basic Cross-Domain Requirements", function() {
+  ok(SC.Request, "SC.Request is defined");
+  ok("" !== url, "url variable is not empty");
+  ok(request !== null, "request object is not null");
+});
+
+test("Test Cross-Domain GET Request", function() {
+
+  var response, timer;
+
+  timer = setTimeout(function() {
+    ok(false, 'response did not invoke notify() within 5sec');
+    window.start();
+  }, 5000);
+
+  request.notify(this, function(response) {
+    var freebaseResponseCodeValue = '/api/status/ok';
+    ok(SC.ok(response), 'response should not be an error');
+    // The Freebase search API returns a code KV in its response
+    equals(response.get('body').code, freebaseResponseCodeValue, 'The Freebase API returned a success code for the cross-domain request');
+    clearTimeout(timer);
+    window.start();
+  });
+  
+
+  response = request.crossDomain().send();
+  ok(response !== null, 'request.send() should return a response object');
+  ok(response.get('status') < 0, 'response should still not have a return code since this should be async');
+
+  stop(); // stop the test runner - wait for a response
+  
 });
 

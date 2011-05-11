@@ -42,6 +42,15 @@ SC.Request = SC.Object.extend(SC.Copyable, SC.Freezable,
 isAsynchronous: YES,
 
   /**
+     Process the request using JSON-P. You can change this option with the
+     crossDomain() helper method.
+
+     @default NO
+     @property {Boolean}
+  */
+  isCrossDomain: NO,
+
+  /**
     Processes the request and response as JSON if possible.  You can change
     this option with the json() helper method.
 
@@ -80,7 +89,7 @@ isAsynchronous: YES,
     only supported option is SC.XHRResponse which uses a traditional
     XHR transport.
     
-		@default SC.XHRResponse
+    @default SC.XHRResponse
     @property {SC.Response}
   */
   responseClass: SC.XHRResponse,
@@ -231,7 +240,7 @@ isAsynchronous: YES,
     }
     
     ret.source = this.get('source') || this ;
-    
+  
     return this.constructor.create(ret);
   },
   
@@ -296,6 +305,19 @@ isAsynchronous: YES,
   },
 
   /**
+     Converts the current request to work cross-domain.
+
+     @param {Boolean} flag YES to make cross-domain, NO or undefined
+     @returns {SC.Request} receiver
+  */
+  crossDomain: function(flag) {
+    if (flag === undefined) {
+      flag = YES;
+    }
+    return this.set('isCrossDomain', flag);
+  },
+
+  /**
     Converts the current request to use JSON.
     
     @param {Boolean} flag YES to make JSON, NO or undefined
@@ -351,7 +373,11 @@ isAsynchronous: YES,
     else if (timeout === 0) {
       throw "The timeout value must either not be specified or must be greater than 0";
     }
-    
+
+    if (this.get('isCrossDomain')) {
+      this.set('responseClass', SC.JSONPResponse);
+    }
+
     if (body) this.set('body', body);
     return SC.Request.manager.sendRequest(this.copy()._prep());
   },
