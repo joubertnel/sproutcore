@@ -378,29 +378,33 @@ SC.Response = SC.Object.extend(
 SC.JSONPResponse = SC.Response.extend({
 
   _addCallbackParam: function(url) {
-    var urlHasParams = url.split('?').length > 0;
+    var urlHasParams = url.split('?').length > 1;
     var callbackParamPrefix = urlHasParams ? '&' : '?';
     return '%@%@callback=?'.fmt(url, callbackParamPrefix);
   },
 
   encodedBody: null,
 
+  didSucceed: function(data) {
+    var thisResponse = this;
+    this.set('status', 200);
+    this.receive(function(proceed) {
+      if (!proceed) {
+        return;
+      }
+      thisResponse.set('encodedBody', data);      
+    });
+  },
+
   invokeTransport: function() {
-    SC.Logger.log('jsonpresponse invokeTrasnport');
     var thisResponse = this;
     var JSONPifiedUrl = this._addCallbackParam(this.get('address'));
-    
-    $.getJSON(JSONPifiedUrl, null, function(data) {      
-      thisResponse.set('status', 200);
-      thisResponse.receive(function(proceed) {
-        if (!proceed) {
-          return;
-        }
-        thisResponse.set('encodedBody', data);
-      }, thisResponse);      
-    });
-  }
 
+    $.ajax({ url:JSONPifiedUrl,
+             dataType: 'json',
+             success: function(data) { thisResponse.didSucceed(data); }
+           });
+  }
     
 });
 
