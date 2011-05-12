@@ -366,6 +366,38 @@ SC.Response = SC.Object.extend(
   
 });
 
+
+/**
+   Concrete implementation of SC.Response that implements support for
+   cross-domain requests using JSONP.
+
+   @extends SC.Response
+   @since SproutCore 1.6
+*/
+
+SC.JSONPResponse = SC.Response.extend({
+
+  encodedBody: null,
+
+  invokeTransport: function() {
+    SC.Logger.log('jsonpresponse invokeTrasnport');
+    var thisResponse = this;
+    var JSONPifiedUrl = '%@&callback=?'.fmt(this.get('address'));
+    
+    $.getJSON(JSONPifiedUrl, null, function(data) {      
+      thisResponse.set('status', 200);
+      thisResponse.receive(function(proceed) {
+        if (!proceed) {
+          return;
+        }
+        thisResponse.set('encodedBody', data);
+      }, thisResponse);      
+    });
+  }
+
+    
+});
+
 /**
   Concrete implementation of SC.Response that implements support for using 
   XHR requests.
