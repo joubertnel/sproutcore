@@ -377,12 +377,18 @@ SC.Response = SC.Object.extend(
 
 SC.JSONPResponse = SC.Response.extend({
 
+  _addCallbackParam: function(url) {
+    var urlHasParams = url.split('?').length > 0;
+    var callbackParamPrefix = urlHasParams ? '&' : '?';
+    return '%@%@callback=?'.fmt(url, callbackParamPrefix);
+  },
+
   encodedBody: null,
 
   invokeTransport: function() {
     SC.Logger.log('jsonpresponse invokeTrasnport');
     var thisResponse = this;
-    var JSONPifiedUrl = '%@&callback=?'.fmt(this.get('address'));
+    var JSONPifiedUrl = this._addCallbackParam(this.get('address'));
     
     $.getJSON(JSONPifiedUrl, null, function(data) {      
       thisResponse.set('status', 200);
