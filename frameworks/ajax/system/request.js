@@ -11,6 +11,7 @@ sc_require('system/response');
   @class
   
   Implements support for Ajax requests using XHR and other prototcols.
+  Also implements support for cross-domain requests using JSON-P.
   
   SC.Request is much like an inverted version of the request/response objects
   you receive when implementing HTTP servers.  
@@ -85,9 +86,8 @@ isAsynchronous: YES,
   }.property().cacheable(),
 
   /**
-    Underlying response class to actually handle this request.  Currently the
-    only supported option is SC.XHRResponse which uses a traditional
-    XHR transport.
+    Underlying response class to actually handle this request.
+    Two options are available: SC.XHRResponse and SC.JSONPResonse.
     
     @default SC.XHRResponse
     @property {SC.Response}
@@ -306,6 +306,8 @@ isAsynchronous: YES,
 
   /**
      Converts the current request to work cross-domain.
+     Cross-domain requests use the JSON-P mechanism and will therefor
+     always use the HTTP GET method.
 
      @param {Boolean} flag YES to make cross-domain, NO or undefined
      @returns {SC.Request} receiver
