@@ -24,15 +24,13 @@ SC.MIXED_STATE = '__MIXED__' ;
   Usually you will not work directly with the SC.Pane class, but with one of
   its subclasses such as SC.MainPane, SC.Panel, or SC.PopupPane.
 
-  h1. Showing a Pane
+  ## Showing a Pane
 
   To make a pane visible, you need to add it to your HTML document.  The
   simplest way to do this is to call the append() method:
 
-  {{{
-     myPane = SC.Pane.create();
-     myPane.append(); // adds the pane to the document
-  }}}
+      myPane = SC.Pane.create();
+      myPane.append(); // adds the pane to the document
 
   This will insert your pane into the end of your HTML document body, causing
   it to display on screen.  It will also register your pane with the
@@ -49,7 +47,7 @@ SC.MIXED_STATE = '__MIXED__' ;
   resize with the window if needed, relaying resize notifications to children
   as well.
 
-  h1. Hiding a Pane
+  ## Hiding a Pane
 
   When you are finished with a pane, you can hide the pane by calling the
   remove() method.  This method will actually remove the Pane from the
@@ -63,7 +61,7 @@ SC.MIXED_STATE = '__MIXED__' ;
   You can readd a pane to the document again any time in the future by using
   any of the insertion methods defined in the previous section.
 
-  h1. Receiving Events
+  ## Receiving Events
 
   Your pane and its child views will automatically receive any mouse or touch
   events as long as it is on the screen.  To receive keyboard events, however,
@@ -666,7 +664,7 @@ SC.Pane = SC.View.extend(SC.ResponderContext,
   },
 
   /** @private */
-  classNames: 'sc-pane'.w()
+  classNames: ['sc-pane']
 
 }) ;
 
